@@ -131,7 +131,7 @@ bool ClientSocket::receiveAnswer() const{
     }
 
     int16_t * s = new int16_t;
-    
+
     memcpy(s, buffer, 2);
     uint16_t size_data = ntohs(*s);
 

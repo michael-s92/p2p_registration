@@ -39,7 +39,7 @@ void calculateHash(uint64_t challenge, uint8_t id, uint64_t& nonce, bool& found)
         SHA256_Update(&sha256, &TEAM_RANDOM, sizeof(uint16_t));
         SHA256_Update(&sha256, &PROJECT, sizeof(uint16_t));
         SHA256_Update(&sha256, &tmp_nonce, sizeof(uint64_t));
-        SHA256_Update(&sha256, &INFO_C, strlen(INFO_C));
+        SHA256_Update(&sha256, INFO_C, strlen(INFO_C));
 
         SHA256_Final(hash, &sha256);
 
@@ -57,7 +57,7 @@ void calculateHash(uint64_t challenge, uint8_t id, uint64_t& nonce, bool& found)
             std::fwrite(&TEAM_RANDOM, sizeof(uint16_t) , 1, f);
             std::fwrite(&PROJECT, sizeof(uint16_t) , 1, f);
             std::fwrite(&nonce, sizeof(uint64_t) , 1, f);
-            std::fwrite(&INFO_C, sizeof INFO_C[0] , strlen(INFO_C), f);
+            std::fwrite(INFO_C, sizeof INFO_C[0] , strlen(INFO_C), f);
             std::fclose(f);
         }
 
