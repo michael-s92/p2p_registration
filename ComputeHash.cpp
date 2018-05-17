@@ -6,20 +6,28 @@
 
 #include <thread>
 #include <mutex>
+#include <atomic>
 #include <functional>
 #include <vector>
-
+#include <chrono>
 
 std::mutex lock;
+std::atomic<bool> reset(false);
+
+void timeUp(){
+    std::this_thread::sleep_for(std::chrono::seconds(SECONDS_TO_WAIT));
+    reset = true;
+}
 
 void calculateHash(uint64_t challenge, uint8_t id, uint64_t& nonce, bool& found){
 
-    std::cout << "Thread " << (int)id << " started\n";
+    //std::cout << "Thread " << (int)id << " started\n";
 
-    uint64_t tmp_nonce = id - THREADS_NUM;
+    uint64_t tmp_nonce = START_VALUE + id - THREADS_NUM;
     bool check;
 
     do {
+        if(reset) break;
         tmp_nonce += THREADS_NUM;
 
         unsigned char hash[SHA256_DIGEST_LENGTH];
@@ -41,7 +49,7 @@ void calculateHash(uint64_t challenge, uint8_t id, uint64_t& nonce, bool& found)
         std::lock_guard<std::mutex> guard(lock);
         found = true;
         nonce = tmp_nonce;
-        std::cout << "Thread " << (int)id << " found hash\n";
+        std::cout << (int)id << " thread found\n";
     }
 
 }
@@ -50,6 +58,7 @@ uint64_t findNonce(uint64_t challenge) {
 
     uint64_t nonce = 0;
     bool found = false;
+    reset = false;
     std::vector<std::thread> vec;
 
     for (int i = 0; i < THREADS_NUM; i++) {
@@ -57,8 +66,13 @@ uint64_t findNonce(uint64_t challenge) {
         vec.emplace_back(std::move(t));
     }
 
+    std::thread t(timeUp);
+    t.detach();
+
     for (auto t = vec.begin(); t < vec.end(); t++) //vector<thread>::iterator
         t->join();
+
+    //t.join();
 
     return nonce;
 }

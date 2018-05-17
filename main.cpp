@@ -16,14 +16,17 @@ int main() {
         cout << "Challenge: " << ch << endl;
 
         uint64_t nonce = findNonce(ch);
-        cout << "Nonce: " << nonce << endl;
+        if(nonce != 0) {
+            cout << "Nonce: " << nonce << endl;
 
-        bool sent = client.sendEnrollRegistration(ch, nonce);
-        if(sent)
-            answer = client.receiveAnswer();
-        else
+            bool sent = client.sendEnrollRegistration(ch, nonce);
+            if (sent)
+                answer = client.receiveAnswer();
+            else
+                answer = false;
+        } else {
             answer = false;
-
+        }
     } while (!answer);
 
     return 0;
