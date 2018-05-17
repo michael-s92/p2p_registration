@@ -30,7 +30,7 @@ static const uint16_t TEAM_RANDOM =  65535;
 static const uint8_t THREADS_NUM = 8;
 static const uint64_t START_VALUE = 100000;
 
-static const uint8_t SECONDS_TO_WAIT = 45;
+static const uint8_t SECONDS_TO_WAIT = 30;
 
 
 #endif //P2P_REGISTRATION_CONSTANTS_H

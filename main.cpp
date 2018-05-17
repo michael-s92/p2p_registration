@@ -10,8 +10,10 @@ using namespace std;
 int main() {
 
     bool answer;
+    ClientSocket client(ADDR, PORT);
+
     do {
-        ClientSocket client(ADDR, PORT);
+        client.connectToServer();
         uint64_t ch = client.receiveChallenge();
         cout << "Challenge: " << ch << endl;
 

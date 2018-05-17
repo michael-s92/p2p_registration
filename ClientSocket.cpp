@@ -23,12 +23,10 @@ void ClientSocket::terminateProgram(std::string msg) {
 
 ClientSocket::ClientSocket(const char *addr, int port) {
 
-    _fd = socket(AF_INET, SOCK_STREAM, 0);
-    if (_fd < 0) { terminateProgram("Socket not created"); }
+    _addr_info = new struct sockaddr_in();
 
-    struct sockaddr_in *addrInfo = new struct sockaddr_in();
-    addrInfo->sin_family = AF_INET;
-    addrInfo->sin_port = htons(port);
+    _addr_info->sin_family = AF_INET;
+    _addr_info->sin_port = htons(port);
 
     if (inet_addr(addr) == -1) {
         struct hostent *he;
@@ -40,19 +38,24 @@ ClientSocket::ClientSocket(const char *addr, int port) {
         addr_list = (struct in_addr **)he->h_addr_list;
 
         for (int i = 0; addr_list[i] != NULL; i++) {
-            addrInfo->sin_addr = *addr_list[i];
+            _addr_info->sin_addr = *addr_list[i];
             std::cout << addr << " resolved to " << inet_ntoa(*addr_list[i]) << std::endl;
             break;
         }
     } else {
-        addrInfo->sin_addr.s_addr = inet_addr(addr);
+        _addr_info->sin_addr.s_addr = inet_addr(addr);
     }
+}
 
-    if (connect(_fd, (struct sockaddr *)addrInfo, sizeof(struct sockaddr_in)) < 0) {
+void ClientSocket::connectToServer(){
+
+    _fd = socket(AF_INET, SOCK_STREAM, 0);
+    if (_fd < 0) { terminateProgram("Socket not created"); }
+
+    if (connect(_fd, (struct sockaddr *)_addr_info, sizeof(struct sockaddr_in)) < 0) {
         terminateProgram("connect failed");
     }
 
-    delete addrInfo;
     std::cout << "Connected\n";
 }
 
@@ -157,4 +160,8 @@ bool ClientSocket::receiveAnswer() const{
         std::cout << "Registrovan" << std::endl;
         return true;
     }
+}
+
+ClientSocket::~ClientSocket() {
+    delete _addr_info;
 }
