@@ -6,6 +6,7 @@ set(CMAKE_CXX_STANDARD 11)
 include_directories(.)
 
 link_libraries(crypto)
+link_libraries(pthread)
 
 add_executable(p2p_registration
         ClientSocket.cpp
