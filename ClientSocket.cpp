@@ -77,39 +77,32 @@ uint64_t ClientSocket::receiveChallenge() const {
     if(enroll_data != ENROLL_INIT) terminateProgram("Lose primljena poruka");
     delete s;
 
-    uint64_t* a = new uint64_t;
-    memcpy(a, buffer + 4, 8);
-    uint64_t challenge_data = be64toh(*a);
-    delete a;
+    uint64_t a;
+    memcpy(&a, buffer + 4, 8);
 
-    return challenge_data;
+    return a;
 }
 
 // big endian is network byte order
 bool ClientSocket::sendEnrollRegistration(uint64_t challenge, uint64_t nonce) const {
 
     uint16_t buffer_size =  24 + INFO.size(); // 2 + 2 + 8 + 2 + 2 + 8 + INFO.length();
-    char buffer[buffer_size];
+    uint8_t buffer[buffer_size];
 
-    uint16_t tmp16 = htobe16(buffer_size);
+    uint16_t tmp16 = htons(buffer_size);
     memcpy(buffer, &tmp16, 2);
 
-    tmp16 = htobe16(ENROLL_REGISTER);
+    tmp16 = htons(ENROLL_REGISTER);
     memcpy(buffer + 2, &tmp16, 2);
 
-    uint64_t tmp64 = htobe64(challenge);
-    memcpy(buffer + 4, &tmp64, 8); // [4 .. 11]
+    memcpy(buffer + 4, &challenge, 8);
 
-    tmp16 = htobe16(TEAM_RANDOM);
-    memcpy(buffer + 12, &tmp16, 2);
+    memcpy(buffer + 12, &TEAM_RANDOM, 2);
+    memcpy(buffer + 14, &PROJECT, 2);
 
-    tmp16 = htobe16(PROJECT);
-    memcpy(buffer + 14, &tmp16, 2);
+    memcpy(buffer + 16, &nonce, 8);
 
-    tmp64 = htobe64(nonce);
-    memcpy(buffer + 16, &tmp64, 8); // [16 .. 23]
-
-    memcpy(buffer + 24, &INFO, INFO.size());
+    memcpy(buffer + 24, INFO_C, strlen(INFO_C));
 
     if( send(_fd , buffer , buffer_size , 0) <= 0)
     {
@@ -133,22 +126,27 @@ bool ClientSocket::receiveAnswer() const{
     }
 
     if (d == 0){
-        std::cout << "Zatvorena konekcija" << std::endl;
+        std::cout << "Connection closed" << std::endl;
         return false;
     }
 
     int16_t * s = new int16_t;
+    
     memcpy(s, buffer, 2);
     uint16_t size_data = ntohs(*s);
 
     memcpy(s, buffer + 2, 2);
     uint16_t enroll_data = ntohs(*s);
 
+    memcpy(s, buffer + 4, 2);
+    uint16_t reserved = ntohs(*s);
+
     memcpy(s, buffer + 6, 2);
     uint16_t team_or_error = ntohs(*s);
 
     delete s;
 
+    std::cout << "reserved: " << reserved << std::endl;
     if (enroll_data == ENROLL_FAILURE){
 
         char por[size_data - 8];
@@ -157,7 +155,7 @@ bool ClientSocket::receiveAnswer() const{
 
         return false;
     } else if (enroll_data == ENROLL_SUCCESS){
-        std::cout << "Registrovan" << std::endl;
+        std::cout << "Registrovan, team number: " << team_or_error << std::endl;
         return true;
     }
 }

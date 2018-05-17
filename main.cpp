@@ -3,6 +3,8 @@
 #include "Constants.h"
 #include "ComputeHash.h"
 
+//#include <inttypes.h>
+
 using namespace std;
 
 
@@ -16,6 +18,7 @@ int main() {
         client.connectToServer();
         uint64_t ch = client.receiveChallenge();
         cout << "Challenge: " << ch << endl;
+        //printf("Ch2: %" PRIu64 "\n", ch);
 
         uint64_t nonce = findNonce(ch);
         if(nonce != 0) {
