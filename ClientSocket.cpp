@@ -123,7 +123,7 @@ bool ClientSocket::sendEnrollRegistration(uint64_t challenge, uint64_t nonce) co
 
 bool ClientSocket::receiveAnswer() const{
 
-    char buffer[12];
+    char buffer[48];
     std::string reply;
 
     uint8_t d;
@@ -151,9 +151,9 @@ bool ClientSocket::receiveAnswer() const{
 
     if (enroll_data == ENROLL_FAILURE){
 
-        char* por;
+        char por[size_data - 8];
         memcpy(por, buffer + 8, size_data - 8);
-        std::cout << "Kod: " << team_or_error << "Greska: " <<  *por <<std::endl;
+        std::cout << "Kod: " << team_or_error << " Greska: " <<  por <<std::endl;
 
         return false;
     } else if (enroll_data == ENROLL_SUCCESS){
