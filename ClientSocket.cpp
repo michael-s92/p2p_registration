@@ -88,7 +88,7 @@ uint64_t ClientSocket::receiveChallenge() const {
 // big endian is network byte order
 bool ClientSocket::sendEnrollRegistration(uint64_t challenge, uint64_t nonce) const {
 
-    uint16_t buffer_size =  24 + VECTOR_INFO.size(); // 2 + 2 + 8 + 2 + 2 + 8 + INFO.length();
+    uint16_t buffer_size =  24 + INFO.size(); // 2 + 2 + 8 + 2 + 2 + 8 + INFO.length();
     char buffer[buffer_size];
 
     uint16_t tmp16 = htobe16(buffer_size);
@@ -109,7 +109,7 @@ bool ClientSocket::sendEnrollRegistration(uint64_t challenge, uint64_t nonce) co
     tmp64 = htobe64(nonce);
     memcpy(buffer + 16, &tmp64, 8); // [16 .. 23]
 
-    memcpy(buffer + 24, &VECTOR_INFO, VECTOR_INFO.size());
+    memcpy(buffer + 24, &INFO, INFO.size());
 
     if( send(_fd , buffer , buffer_size , 0) <= 0)
     {

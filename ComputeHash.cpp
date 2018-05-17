@@ -38,7 +38,7 @@ void calculateHash(uint64_t challenge, uint8_t id, uint64_t& nonce, bool& found)
         SHA256_Update(&sha256, &TEAM_RANDOM, sizeof(uint16_t));
         SHA256_Update(&sha256, &PROJECT, sizeof(uint16_t));
         SHA256_Update(&sha256, &tmp_nonce, sizeof(uint64_t));
-        SHA256_Update(&sha256, &VECTOR_INFO, VECTOR_INFO.size());
+        SHA256_Update(&sha256, &INFO, INFO.size());
 
         SHA256_Final(hash, &sha256);
 

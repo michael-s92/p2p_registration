@@ -12,4 +12,4 @@ $(PROG): main.o ClientSocket.o ComputeHash.o
 .PHONY: clean
 
 clean:
-	rm -f *.o $(PROG) *~
+	rm -f *.o $(PROG) *~ hash.bin
