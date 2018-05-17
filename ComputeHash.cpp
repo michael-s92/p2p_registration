@@ -14,7 +14,7 @@ std::mutex lock;
 
 void calculateHash(uint64_t challenge, uint8_t id, uint64_t& nonce, bool& found){
 
-    std::cout << "Thread " << (int)id << " started" << std::endl;
+    std::cout << "Thread " << (int)id << " started\n";
 
     uint64_t tmp_nonce = id - THREADS_NUM;
     bool check;
@@ -41,9 +41,7 @@ void calculateHash(uint64_t challenge, uint8_t id, uint64_t& nonce, bool& found)
         std::lock_guard<std::mutex> guard(lock);
         found = true;
         nonce = tmp_nonce;
-        std::cout << "Thread " << (int)id << " found hash" << std::endl;
-    } else {
-        std::cout << "Thread finished" << std::endl;
+        std::cout << "Thread " << (int)id << " found hash\n";
     }
 
 }

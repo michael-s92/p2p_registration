@@ -27,7 +27,7 @@ static const std::vector<uint8_t> VECTOR_INFO(INFO.begin(), INFO.end());
 static const uint16_t PROJECT = 4963; //DHT
 static const uint16_t TEAM_RANDOM =  65535;
 
-static const uint8_t THREADS_NUM = 6;
+static const uint8_t THREADS_NUM = 8;
 
 
 #endif //P2P_REGISTRATION_CONSTANTS_H

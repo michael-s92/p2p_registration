@@ -52,6 +52,7 @@ ClientSocket::ClientSocket(const char *addr, int port) {
         terminateProgram("connect failed");
     }
 
+    delete addrInfo;
     std::cout << "Connected\n";
 }
 
@@ -63,7 +64,7 @@ uint64_t ClientSocket::receiveChallenge() const {
         puts("recv failed");
     }
 
-    int16_t * s = new int16_t;
+    int16_t* s = new int16_t;
     memcpy(s, buffer, 2);
     uint16_t size_data = ntohs(*s);
     if(size_data != 12) terminateProgram("Lose primljena poruka");
@@ -71,10 +72,12 @@ uint64_t ClientSocket::receiveChallenge() const {
     memcpy(s, buffer + 2, 2);
     uint16_t enroll_data = ntohs(*s);
     if(enroll_data != ENROLL_INIT) terminateProgram("Lose primljena poruka");
+    delete s;
 
-    uint64_t * a = new uint64_t;
+    uint64_t* a = new uint64_t;
     memcpy(a, buffer + 4, 8);
     uint64_t challenge_data = be64toh(*a);
+    delete a;
 
     return challenge_data;
 }
@@ -140,6 +143,8 @@ bool ClientSocket::receiveAnswer() const{
 
     memcpy(s, buffer + 6, 2);
     uint16_t team_or_error = ntohs(*s);
+
+    delete s;
 
     if (enroll_data == ENROLL_FAILURE){
 
